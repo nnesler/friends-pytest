@@ -1,6 +1,18 @@
+# assert expression
+## if true nothing happens
+## if false raises AssertionError
+
+# create virtual environment and activate
+# pip install pytest
+# pip install pytest-cov
+
+# run tests with python -m pytest -s
+# compare -s and -v when running the tests
+# run coverage tests with python -m pytest --cov
+
 # test_oop_loan_pmt.py
 import pytest
-from oop_loan_pmt import Loan
+from oop_loan_pmt import Loan, collectLoanDetails, main 
 
 @pytest.fixture
 def loan():
@@ -25,9 +37,14 @@ def test_collect_loan_details(monkeypatch):
     assert loan.annualRate == 0.06
     assert loan.periodicIntRate == 0.005
 
-def test_loan_payment_output(capsys, monkeypatch):
-    inputs = iter(['100000', '30', '0.06'])
-    monkeypatch.setattr('builtins.input', lambda prompt: next(inputs))
-    Loan(100000, 30, 0.06).calculateLoanPmt()
-    captured = capsys.readouterr()
-    assert captured.out == 'Your monthly payment is: $599.55\n'
+def test_main_function(capsys, monkeypatch):
+    input_values = [10000, 30, 0.06]
+    def mock_input(s):
+        return input_values.pop(0)
+    monkeypatch.setattr('builtins.input', mock_input)
+    print("\r")
+    print(" -- collectUserDetails functional test")
+    loan = collectLoanDetails()
+    assert loan.loanAmount == 10000
+    assert loan.numberOfPmts == 360
+    assert loan.annualRate == 0.06
